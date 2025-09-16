@@ -6,7 +6,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "../../shell/angular-mfe-host/libs/shared/src/lib/hero-mfe-ctx/hero-mfe-ctx"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

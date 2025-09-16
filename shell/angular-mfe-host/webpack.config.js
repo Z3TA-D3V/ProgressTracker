@@ -10,6 +10,7 @@ module.exports = withModuleFederationPlugin({
   },
   shared: {
     ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
+    'libs/shared': { singleton: true, strictVersion: true }, // your shared package
   },
 
 });
