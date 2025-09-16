@@ -1,0 +1,4 @@
+{
+    "angular-mfe-nav": "http://localhost:4201/remoteEntry.js",
+    "angular-mfe-hero": "http://localhost:4202/remoteEntry.js"
+}
