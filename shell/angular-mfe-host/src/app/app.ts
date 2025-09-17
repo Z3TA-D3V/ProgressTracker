@@ -25,11 +25,17 @@ export class App {
         type: 'manifest',
         remoteName: 'angular-mfe-hero',
         exposedModule: './Component'
+      }),
+      loadRemoteModule({
+        type: 'manifest',
+        remoteName: 'angular-mfe-tracky-manager',
+        exposedModule: './Component'
       })
+
     ]
     const response = await Promise.all(remoteModules);
     // TODO: Gestionar errores ya que la aplicación peta en caso de que falle alguna carga. Nos obliga a levantar todas las MFEs
-    this.angularMfe.update(values => [...values, response[0].AngularMfeNav, response[1].AngularMfeHero]);
+    this.angularMfe.update(values => [...values, response[0].AngularMfeNav, response[1].AngularMfeHero, response[2].AngularMfeTrackyManager]);
   }
   
   constructor() {

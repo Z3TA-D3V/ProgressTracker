@@ -9,6 +9,6 @@ import { Component, signal } from '@angular/core';
 })
 export class AngularMfeNav {
 
-  title = signal('Progress Tracker');
+  title = signal('Tracky!');
 
 }
