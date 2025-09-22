@@ -26,7 +26,9 @@ export class AngularComponentTrackyAdd {
 
   profileForm = new FormGroup({
     repsControl: new FormControl('0'),
-    weightControl: new FormControl('0')
+    weightControl: new FormControl('0'),
+    exerciseSelected: new FormControl(this.initialExercises()[0].id),
+    exerciseCustomSelected: new FormControl('')
   })
 
 
@@ -63,13 +65,21 @@ export class AngularComponentTrackyAdd {
     this.enableAddSerie.set(false);
     this.profileForm = new FormGroup({
       repsControl: new FormControl('0'),
-      weightControl: new FormControl('0')
+      weightControl: new FormControl('0'),
+      exerciseSelected: new FormControl(this.initialExercises()[0].id),
+      exerciseCustomSelected: new FormControl('')
     })
 
   }
 
   updateCheck(): void{
     this.newExerciseChecked.set(!this.newExerciseChecked());
+
+    if(this.newExerciseChecked()){
+      this.profileForm.get('exerciseSelected')?.disable();
+    }else{
+      this.profileForm.get('exerciseSelected')?.enable();
+    }
   }
 
   addSerie(): void {
@@ -78,5 +88,9 @@ export class AngularComponentTrackyAdd {
 
   saveSerie(): void {
     this.series.update(s => [...s, {weight: this.profileForm.value.weightControl as unknown as number, reps: this.profileForm.value.repsControl as unknown as number, id: this.series().length + 1}]);
+  }
+
+  saveEjercicio(): void {
+    console.log(this.profileForm.value);
   }
 }

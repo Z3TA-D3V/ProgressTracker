@@ -19,74 +19,78 @@ el componente cuando openModal sea false, solo tendríamos que conectar el compo
                 <div class="flex overflow-y-auto flex-col justify-center items-center gap-4 p-4 mb-32">
                         
                     <h2 class="text-center font-extrabold text-2xl pt-2"> {{ currentDateString() }} </h2>
-                        <p class="text-center w-10/12 text-lg mb-8">Desde aquí podrás registrar un nuevo ejercicio! Rellena los datos del ejercicio y lo guardaremos para ti.</p>
+                    <p class="text-center w-10/12 text-lg mb-8">Desde aquí podrás registrar un nuevo ejercicio! Rellena los datos del ejercicio y lo guardaremos para ti.</p>
                     
-                        <select name="exerciseType" [disabled]="newExerciseChecked()" [class]="{'opacity-35' : newExerciseChecked()}" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300">
-                        @for(exercise of initialExercises(); track exercise.id){
+                    <form [formGroup]="profileForm" class="flex flex-col justify-center items-center gap-4 w-full">
+                        <select formControlName="exerciseSelected" name="exerciseType" [class]="{'opacity-35' : newExerciseChecked()}" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300">
+                            @for(exercise of initialExercises(); track exercise.id){
                             <option [value]="exercise.id">{{exercise.name}}</option>
-                        }
-                    </select>
+                            }
+                        </select>
 
-                    <div class="flex flex-row w-10/12 cursor-pointer select-none">
-        
+                        <div class="flex flex-row w-10/12 cursor-pointer select-none">
+                            <!-- Checkbox -->
                             <input type="checkbox" [checked]="newExerciseChecked()" (click)="updateCheck()" class="w-6 h-6" />
                             <!-- Texto -->
                             <span class="text-gray-700 mx-2" (click)="updateCheck()">Quiero añadir un nuevo ejercicio</span>
-                
-                    </div>
-                    
-                    
-                    @if(newExerciseChecked()){
-                        <input type="text" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300" placeholder="Nombre del nuevo ejercicio (e.g. Sentadillas)"/>
-                    }
-
-                    @if(!enableAddSerie()){
-                        <div class="w-10/12 flex flex-row">
-                            <button class="bg-blue-400 text-white font-bold p-2 rounded-md" (click)="addSerie()">+ Serie</button>
                         </div>
-                    }
+                        
+                        <!--Custom Exercise-->
+                        @if(newExerciseChecked()){
+                            <input formControlName="exerciseCustomSelected" type="text" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300" placeholder="Nombre del nuevo ejercicio (e.g. Sentadillas)"/>
+                        }
 
-                    @if(series().length){
-                        <h3 class="font-bold text-xl">Series totales: {{series().length}}</h3>
-                        @for(serie of series(); track serie.reps + '-' + serie.weight){
-                            <div class="border-2 border-slate-300 rounded-md p-2 w-10/12 flex flex-row justify-between">
-                                <span>Reps: {{serie.reps}} </span>
-                                <span>Peso: {{serie.weight}} kg</span>
+                        <!--Enable Serie Button-->
+                        @if(!enableAddSerie()){
+                            <div class="w-10/12 flex flex-row">
+                                <button class="bg-blue-400 text-white font-bold p-2 rounded-md" (click)="addSerie()">+ Serie</button>
                             </div>
                         }
-                    }
-                    <div>
 
-                    </div>
+                        <!--Series Adder-->
+                        @if(enableAddSerie()){
+                            <div class="w-10/12 flex flex-col">
+                                <label class="font-bold text-xl text-center w-full">Serie {{series().length + 1}}</label>
+                                
+                                <div class="flex flex-row justify-center w-full">
+                                    <div class="flex flex-col mb-4">
+                                        <label class="text-center">Repeticiones</label>
+                                        <input class="text-center" type="number" formControlName="repsControl" value="0">
+                                    </div>
 
-                    @if(enableAddSerie()){
-                        <form [formGroup]="profileForm" (submit)="saveSerie()" class="w-10/12 flex flex-col">
-
-                            <label class="font-bold text-xl text-center w-full">Serie {{series().length + 1}}</label>
-                            
-                            <div class="flex flex-row justify-center w-full">
-                                <div class="flex flex-col mb-4">
-                                    <label class="text-center">Repeticiones</label>
-                                    <input class="text-center" type="number" formControlName="repsControl" value="0">
+                                    <div class="flex flex-col mb-4">
+                                        <label class="text-center">Peso (kg)</label>
+                                        <input class="text-center" type="number" formControlName="weightControl" value="0">
+                                    </div>
                                 </div>
 
-                                <div class="flex flex-col mb-4">
-                                    <label class="text-center">Peso (kg)</label>
-                                    <input class="text-center" type="number" formControlName="weightControl" value="0">
+                                <div class="flex justify-center w-full gap-4">
+                                    <button type="button" class="bg-amber-300 text-white font-bold p-2 rounded-md" (click)="enableAddSerie.set(false)">Cancelar</button>
+                                    <button type="button" (click)="saveSerie()" class="bg-green-400 text-white font-bold p-2 rounded-md">Guardar</button>
                                 </div>
                             </div>
+                        }
 
-                            <div class="flex justify-center w-full gap-4">
-                                <button type="button" class="bg-amber-300 text-white font-bold p-2 rounded-md" (click)="enableAddSerie.set(false)">Cancelar</button>
-                                <button type="submit" class="bg-green-400 text-white font-bold p-2 rounded-md">Guardar</button>
-                            </div>
-                        </form>
-                    }
+                        <!--Series Historial-->
+                        @if(series().length){
+                            <h3 class="font-bold text-xl">Series totales: {{series().length}}</h3>
+                            @for(serie of series(); track serie.reps + '-' + serie.weight){
+                                <div class="border-2 border-slate-300 rounded-md p-2 w-10/12 flex flex-row justify-between">
+                                    <span>Reps: {{serie.reps}} </span>
+                                    <span>Peso: {{serie.weight}} kg</span>
+                                </div>
+                            }
+                        }
+
+                    </form>
                     
                 </div>
 
                 <div class="absolute bottom-4 left-1/2 -translate-x-1/2">
                     <button class="bg-red-500 text-white font-bold p-2 rounded-md" (click)="closeModal()">Cerrar</button>
+                    @if(series().length){
+                        <button class="mx-2 bg-blue-400 text-white font-bold p-2 rounded-md" (click)="saveEjercicio()">Guardar ejercicio</button>
+                    }
                 </div>
             </div>
         </div>
