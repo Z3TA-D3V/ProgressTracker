@@ -91,6 +91,16 @@ export class AngularComponentTrackyAdd {
   }
 
   saveEjercicio(): void {
-    console.log(this.profileForm.value);
+      const exerciseCustomSelected = this.profileForm.get('exerciseCustomSelected')?.value;
+
+      if(exerciseCustomSelected != ''){
+        this.exerciseService.addExercise(exerciseCustomSelected as string, this.series());
+      }else{
+        const exerciseId = this.profileForm.get('exerciseSelected')?.value;
+        this.exerciseService.saveExercise(exerciseId as number, this.series());
+      }
+
+      console.log("Ejercicios guardados con sus series", this.exerciseService.exercisesSaved());
+      console.log("Ejercicios totales disponibles", this.exerciseService.exercises());
   }
 }

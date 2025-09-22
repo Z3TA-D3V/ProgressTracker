@@ -1,20 +1,38 @@
 import { Injectable, signal } from "@angular/core";
 
+interface ExercisesSaved {
+    name: string;
+    id: number;
+    series: Series[];
+}
+
+interface Exercise {
+    name: string;
+    id: number;
+}
+interface Series {
+    weight: number;
+    reps: number;
+    id: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ExerciseService {
 
-    exercises = signal<Array<{name: string, id: number}>>([]);
+    exercises = signal<Array<Exercise>>([]);
 
-    nextId = 1;
+    exercisesSaved = signal<Array<ExercisesSaved>>([]);
+
+    nextId = this.getExercises().length;
 
     constructor() {
         this.exercises.set(this.getExercises());
     }
 
     // This has to come from a backend in a real app
-    private getExercises(): Array<{name: string, id: number}> {
+    private getExercises(): Exercise[] {
         return [
-            { name: 'Pres de Banca', id: 0},
+            { name: 'Pres de Banca', id: 0 },
             { name: 'Pres militar', id: 1 },
             { name: 'Dominadas', id: 2 },
             { name: 'Sentadilla', id: 3 },
@@ -27,13 +45,32 @@ export class ExerciseService {
         ];
     }
 
-    public addExercise(name: string) {
-        const newExercise = { name, id: this.nextId++ };
-        this.exercises.update(exs => [...exs, newExercise]);
+    public addExercise(name: string, series: Series[]): void {
+        const newExercise = { name, id: this.nextId++};
+        try{
+            this.exercises.update(exs => [...exs, newExercise]);
+            this.saveExercise(newExercise.id, series);
+        }catch(e){
+            console.error("Error adding new exercise: ", e);
+        }
     }
 
-    public eleteExercise(id: number) {
-        this.exercises.update(exs => exs.filter(ex => ex.id !== id))
+    // Update the series of the selected exercise signal
+    public saveExercise(id: number, series: Series[]): void{
+        const exercise = this.exercises().find(ex => ex.id === id) || {name: "Ejercicio no encontrado", id: -1};
+        try{
+            this.exercisesSaved.update(exs => [...exs, {name: exercise.name as string, id: exercise.id, series}]);
+        }catch(e){
+            console.error("Error updating exercise series: ", e);
+        }
     }
 
+    public deleteExercise(id: number): void {
+        try{
+            this.exercises.update(exs => exs.filter(ex => ex.id !== id))
+        }catch(e){
+            console.error("Error deleting exercise: ", e);
+        }
+    }
 }
+
