@@ -16,6 +16,6 @@ export class AngularMfeTrackyManager {
 
   heroMfeCtx = inject(HeroMfeCtx);
 
-  active = computed(() => !this.heroMfeCtx.active()); // La lógica de este MFE depende del estado del Hero MFE
+  active = computed(() => !this.heroMfeCtx.active()); // La lógica de este MFE depende del estado del Hero MFE. (NOT USED: DELETE)
 
 }

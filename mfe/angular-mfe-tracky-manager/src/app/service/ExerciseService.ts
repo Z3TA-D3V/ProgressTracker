@@ -4,6 +4,7 @@ interface ExercisesSaved {
     name: string;
     id: number;
     series: Series[];
+    date: Date;
 }
 
 interface Exercise {
@@ -45,21 +46,21 @@ export class ExerciseService {
         ];
     }
 
-    public addExercise(name: string, series: Series[]): void {
+    public addExercise(name: string, series: Series[], date: Date): void {
         const newExercise = { name, id: this.nextId++};
         try{
             this.exercises.update(exs => [...exs, newExercise]);
-            this.saveExercise(newExercise.id, series);
+            this.saveExercise(newExercise.id, series, date);
         }catch(e){
             console.error("Error adding new exercise: ", e);
         }
     }
 
     // Update the series of the selected exercise signal
-    public saveExercise(id: number, series: Series[]): void{
+    public saveExercise(id: number, series: Series[], date: Date): void{
         const exercise = this.exercises().find(ex => ex.id === id) || {name: "Ejercicio no encontrado", id: -1};
         try{
-            this.exercisesSaved.update(exs => [...exs, {name: exercise.name as string, id: exercise.id, series}]);
+            this.exercisesSaved.update(exs => [...exs, {name: exercise.name as string, id: exercise.id, series, date}]);
         }catch(e){
             console.error("Error updating exercise series: ", e);
         }
@@ -71,6 +72,16 @@ export class ExerciseService {
         }catch(e){
             console.error("Error deleting exercise: ", e);
         }
+    }
+
+    public getMockedExercisesSaved(): ExercisesSaved[] {
+        return [
+            { name: 'Pres de Banca', id: 0, series: [  { weight: 60, reps: 10, id: 0 }, { weight: 70, reps: 8, id: 1 }, { weight: 80, reps: 6, id: 2 } ], date: new Date() },
+            { name: 'Pres militar', id: 1, series: [  { weight: 40, reps: 10, id: 0 }, { weight: 50, reps: 8, id: 1 }, { weight: 60, reps: 6, id: 2 } ], date: new Date() },
+            { name: 'Dominadas', id: 2, series: [  { weight: 0, reps: 10, id: 0 }, { weight: 0, reps: 8, id: 1 }, { weight: 0, reps: 6, id: 2 } ], date: new Date() },
+            { name: 'Sentadilla', id: 3, series: [  { weight: 80, reps: 10, id: 0 }, { weight: 100, reps: 8, id: 1 }, { weight: 120, reps: 6, id: 2 } ], date: new Date() },
+            { name: 'Peso muerto', id: 4, series: [  { weight: 100, reps: 10, id: 0 }, { weight: 120, reps: 8, id: 1 }, { weight: 140, reps: 6, id: 2 } ], date: new Date() },
+        ];
     }
 }
 

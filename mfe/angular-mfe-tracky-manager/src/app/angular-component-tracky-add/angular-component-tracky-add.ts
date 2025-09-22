@@ -82,7 +82,7 @@ export class AngularComponentTrackyAdd {
     }
   }
 
-  addSerie(): void {
+  addSerieEnabler(): void {
     this.enableAddSerie.set(true);
   }
 
@@ -94,10 +94,10 @@ export class AngularComponentTrackyAdd {
       const exerciseCustomSelected = this.profileForm.get('exerciseCustomSelected')?.value;
 
       if(exerciseCustomSelected != ''){
-        this.exerciseService.addExercise(exerciseCustomSelected as string, this.series());
+        this.exerciseService.addExercise(exerciseCustomSelected as string, this.series(), this.dateCTX.currentDate());
       }else{
         const exerciseId = this.profileForm.get('exerciseSelected')?.value;
-        this.exerciseService.saveExercise(exerciseId as number, this.series());
+        this.exerciseService.saveExercise(exerciseId as number, this.series(), this.dateCTX.currentDate());
       }
 
       console.log("Ejercicios guardados con sus series", this.exerciseService.exercisesSaved());
