@@ -1,17 +1,17 @@
 import { Injectable, signal } from "@angular/core";
 
-interface ExercisesSaved {
+export interface ExercisesSaved {
     name: string;
     id: number;
     series: Series[];
     date: Date;
 }
 
-interface Exercise {
+export interface Exercise {
     name: string;
     id: number;
 }
-interface Series {
+export interface Series {
     weight: number;
     reps: number;
     id: number;
@@ -72,6 +72,14 @@ export class ExerciseService {
         }catch(e){
             console.error("Error deleting exercise: ", e);
         }
+    }
+
+    public deleteSavedExercise(id: number): void {
+        this.exercisesSaved.update(exs => exs.filter(ex=> ex.id !== id));
+    }
+
+    public editSavedExercise(exercise: ExercisesSaved): void {
+        this.exercisesSaved.update(exs => exs.map(ex => ex.id === exercise.id ? exercise : ex));
     }
 
     public getMockedExercisesSaved(): ExercisesSaved[] {

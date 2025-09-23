@@ -14,7 +14,9 @@
     "module": "preserve",
         "baseUrl": ".",
     "paths": {
-      "@shared/hero-mfe-ctx": ["./libs/shared/src/lib/hero-mfe-ctx/hero-mfe-ctx" ]
+      "@shared/hero-mfe-ctx": ["./libs/shared/src/lib/hero-mfe-ctx/hero-mfe-ctx" ],
+      "@shared/date-mfe-ctx": ["./libs/shared/src/lib/date-mfe-ctx/date-mfe-ctx" ],
+      "@shared/exercise-mfe-ctx": ["./libs/shared/src/lib/exercise-mfe-ctx/exercise-mfe-ctx" ]
     }
   },
   "angularCompilerOptions": {

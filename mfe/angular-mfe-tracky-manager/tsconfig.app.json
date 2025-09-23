@@ -5,7 +5,10 @@
     "types": []
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../../shell/angular-mfe-host/libs/shared/src/lib/hero-mfe-ctx/hero-mfe-ctx",
+    "../../shell/angular-mfe-host/libs/shared/src/lib/date-mfe-ctx/date-mfe-ctx",
+    "../../shell/angular-mfe-host/libs/shared/src/lib/exercise-mfe-ctx/exercise-mfe-ctx"
   ],
   "exclude": [
     "src/**/*.spec.ts"

@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, inject, signal, WritableSignal } from '@angular/core';
 import { createSwapy, Swapy } from 'swapy';
-import { ExerciseService } from '../service/ExerciseService';
+import { ExerciseService, ExercisesSaved } from '@shared/exercise-mfe-ctx'
+import { AngularComponentTrackyAdd } from '../angular-component-tracky-add/angular-component-tracky-add';
 
 @Component({
   selector: 'angular-component-tracky-list',
-  imports: [],
+  imports: [AngularComponentTrackyAdd],
   templateUrl: './angular-component-tracky-list.html',
   styleUrl: './angular-component-tracky-list.css'
 })
@@ -15,7 +16,11 @@ export class AngularComponentTrackyList implements AfterViewInit {
   exerciseService: ExerciseService = inject(ExerciseService);
 
   // Can declare and use signals directly in the component because it doesnt depend on the DOM. No constructor needed.
-  mockedExercisesSaved = signal(this.exerciseService.getMockedExercisesSaved());
+  
+  //mockedExercisesSaved = signal(this.exerciseService.getMockedExercisesSaved());
+  exercisesSaved = this.exerciseService.exercisesSaved;
+  showEditModal = signal(false);
+  exerciseToEdit!: WritableSignal<ExercisesSaved>;
 
   // Initialize Swapy after the view is initialized, securiring that the DOM is ready
   ngAfterViewInit(){
@@ -30,12 +35,23 @@ export class AngularComponentTrackyList implements AfterViewInit {
     this.swapy.enable(true)
   }
 
-  deleteExercise(id: number): void{
-    
+  deleteSavedExercise(id: number): void{
+    try{
+        this.exerciseService.deleteSavedExercise(id);
+    }catch(e){
+        console.error("Error deleting saved exercise: ", e);
+    }
   }
 
-  editExercise(id: number): void{
-    // To be implemented
+  editExercise(exercise: ExercisesSaved): void{
+    if(!exercise) return;
+    this.showEditModal.set(true);
+    this.exerciseToEdit = signal(exercise);
+  }
+
+  excerciseSavedEvent(exercise: ExercisesSaved): void{
+    this.exerciseService.editSavedExercise(exercise);
+    this.showEditModal.set(false);
   }
 
 

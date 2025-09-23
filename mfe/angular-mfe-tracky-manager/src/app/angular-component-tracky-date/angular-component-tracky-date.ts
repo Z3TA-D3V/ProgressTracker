@@ -1,5 +1,5 @@
-import { Component, computed, effect, inject, Signal } from '@angular/core';
-import { DateCTX } from '../service/DateCTX';
+import { Component, computed, inject, Signal } from '@angular/core';
+import { DateCTX } from '@shared/date-mfe-ctx'; // Idealmente esto sería un paquete NPM compartido entre el host y el MFE
 
 @Component({
   selector: 'angular-component-tracky-date',

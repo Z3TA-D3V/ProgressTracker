@@ -1,16 +1,17 @@
-<div class="flex justify-center items-center min-w-screen">
-    <button data-blendy-from="addExercise" class="bg-slate-200 hover:bg-slate-300 font-bold w-full md:w-3xl mx-5 md:mx-20 p-2 rounded-md" (click)="showModal()">
-    <!-- Must have a single wrapper element -->
-        <span class="text-slate-600"> Registra aquí un nuevo ejercicio + </span>
-    </button>
+@if(exerciseToEdit === undefined ) {
+    <div class="flex justify-center items-center min-w-screen">
+        <button data-blendy-from="addExercise" class="bg-slate-200 hover:bg-slate-300 font-bold w-full md:w-3xl mx-5 md:mx-20 p-2 rounded-md" (click)="showModal()">
+        <!-- Must have a single wrapper element -->
+            <span class="text-slate-600"> Registra aquí un nuevo ejercicio + </span>
+        </button>
 
-</div>
-
+    </div>
+}
 <!-- Target element -->
 <!-- Se podría llevar a un componente interno para no tener que resetear las señales, y que el NgIf llame al constructor del modal para que destruya automaticamente
 el componente cuando openModal sea false, solo tendríamos que conectar el componente hijo con el padre a través de la señal openModal() -->
 
-@if(openModal()){
+@if(openModal() || openModalEdit) {
     <section class="fixed top-0 left-0 z-10 w-full h-full">
         <div class="dark:bg-black/60 bg-black/80 absolute top-0 left-0 z-10 w-full h-full transition-opacity backdrop-blur opacity-100 flex flex-row items-center justify-center">
             
@@ -22,21 +23,31 @@ el componente cuando openModal sea false, solo tendríamos que conectar el compo
                     <p class="text-center w-10/12 text-lg mb-8">Desde aquí podrás registrar un nuevo ejercicio! Rellena los datos del ejercicio y lo guardaremos para ti.</p>
                     
                     <form [formGroup]="profileForm" class="flex flex-col justify-center items-center gap-4 w-full">
-                        <select formControlName="exerciseSelected" name="exerciseType" [class]="{'opacity-35' : newExerciseChecked()}" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300">
-                            @for(exercise of initialExercises(); track exercise.id){
-                            <option [value]="exercise.id">{{exercise.name}}</option>
-                            }
-                        </select>
+                        
+                        @if(openModal()){
+                            <select formControlName="exerciseSelected" name="exerciseType" [class]="{'opacity-35' : newExerciseChecked()}" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300">
+                                @for(exercise of initialExercises(); track exercise.id){
+                                <option [value]="exercise.id">{{exercise.name}}</option>
+                                }
+                            </select>
+                        }
+                        @if(openModalEdit){
+                            <select formControlName="exerciseSelected" name="exerciseType" [class]="{'opacity-35' : newExerciseChecked()}" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300">
+                                <option [value]="exerciseToEdit.id" selected>{{exerciseToEdit.name}}</option>
+                            </select>
+                        }
 
+                        @if(openModal()){
                         <div class="flex flex-row w-10/12 cursor-pointer select-none">
                             <!-- Checkbox -->
                             <input type="checkbox" [checked]="newExerciseChecked()" (click)="updateCheck()" class="w-6 h-6" />
                             <!-- Texto -->
                             <span class="text-gray-700 mx-2" (click)="updateCheck()">Quiero añadir un nuevo ejercicio</span>
                         </div>
+                        }
                         
                         <!--Custom Exercise-->
-                        @if(newExerciseChecked()){
+                        @if(openModal() && newExerciseChecked()){
                             <input formControlName="exerciseCustomSelected" type="text" class="w-10/12 p-2 rounded-md border-2 border-slate-300 focus:outline-amber-300" placeholder="Nombre del nuevo ejercicio (e.g. Sentadillas)"/>
                         }
 
@@ -50,12 +61,17 @@ el componente cuando openModal sea false, solo tendríamos que conectar el compo
                         <!--Series Adder-->
                         @if(enableAddSerie()){
                             <div class="w-10/12 flex flex-col">
-                                <label class="font-bold text-xl text-center w-full">Serie {{series().length + 1}}</label>
-                                
+                                @if(openModal()){
+                                    <label class="font-bold text-xl text-center w-full">Serie {{series().length + 1}}</label>
+                                }
+                                @if(openModalEdit){
+                                    <label class="font-bold text-xl text-center w-full">Serie {{ seriesEdit().length + 1 }}</label>
+                                }
+
                                 <div class="flex flex-row justify-center w-full">
                                     <div class="flex flex-col mb-4">
                                         <label class="text-center">Repeticiones</label>
-                                        <input class="text-center" type="number" formControlName="repsControl" value="0">
+                                        <input class="text-center" type="number" formControlName="repsControl" valuec="0">
                                     </div>
 
                                     <div class="flex flex-col mb-4">
@@ -72,23 +88,39 @@ el componente cuando openModal sea false, solo tendríamos que conectar el compo
                         }
 
                         <!--Series Historial-->
-                        @if(series().length){
+
+                        @if(openModal()){
+                            @if(series().length){
                             <h3 class="font-bold text-xl">Series totales: {{series().length}}</h3>
-                            @for(serie of series(); track serie.reps + '-' + serie.weight){
-                                <div class="border-2 border-slate-300 rounded-md p-2 w-10/12 flex flex-row justify-between">
-                                    <span>Reps: {{serie.reps}} </span>
-                                    <span>Peso: {{serie.weight}} kg</span>
-                                </div>
+                                @for(serie of series(); track serie.reps + '-' + serie.weight){
+                                    <div class="border-2 border-slate-300 rounded-md p-2 w-10/12 flex flex-row justify-between">
+                                        <span>Reps: {{serie.reps}} </span>
+                                        <span>Peso: {{serie.weight}} kg</span>
+                                    </div>
+                                }
                             }
                         }
 
+                        @if(openModalEdit){
+                            @let series = seriesEdit();
+                            @if(series && series.length){
+                            <h3 class="font-bold text-xl">Series totales: {{series && series.length ?  series.length : 'Error'}}</h3>
+                                @for(serie of series; track serie.reps + '-' + serie.weight){
+                                    <div class="border-2 border-slate-300 rounded-md p-2 w-10/12 flex flex-row justify-between">
+                                        <span>Reps: {{serie.reps}} </span>
+                                        <span>Peso: {{serie.weight}} kg</span>
+                                    </div>
+                                }
+                            }
+                        }
+                        
                     </form>
                     
                 </div>
 
                 <div class="absolute bottom-4 left-1/2 -translate-x-1/2">
                     <button class="bg-red-500 text-white font-bold p-2 rounded-md" (click)="closeModal()">Cerrar</button>
-                    @if(series().length){
+                    @if(series().length || seriesEdit().length){
                         <button class="mx-2 bg-blue-400 text-white font-bold p-2 rounded-md" (click)="saveEjercicio()">Guardar ejercicio</button>
                     }
                 </div>
@@ -96,5 +128,7 @@ el componente cuando openModal sea false, solo tendríamos que conectar el compo
         </div>
     </section>
 }
+
+
 
 <!-- Note: You can use the "data-blendy-from" and "data-blendy-to" attributes to specify the elements to animate between states. -->

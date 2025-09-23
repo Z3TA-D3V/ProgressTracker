@@ -1,15 +1,21 @@
-import { Component, EventEmitter, HostListener, inject, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, HostListener, inject, Input, Output, signal, OnInit, Signal, WritableSignal } from '@angular/core';
 import { Blendy, createBlendy } from 'blendy';
-import { DateCTX } from '../service/DateCTX';
-import { ExerciseService } from '../service/ExerciseService';
-import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import { DateCTX } from '@shared/date-mfe-ctx'; // Idealmente esto sería un paquete NPM compartido entre el host y el MFE
+import { ExerciseService, ExercisesSaved, Series } from '@shared/exercise-mfe-ctx'; // Idealmente esto sería un paquete NPM compartido entre el host y el MFE
+import {Form, FormControl, FormGroup, ReactiveFormsModule,} from '@angular/forms';
 @Component({
   selector: 'angular-component-tracky-add',
   imports: [ReactiveFormsModule],
   templateUrl: './angular-component-tracky-add.html',
   styleUrl: './angular-component-tracky-add.css'
 })
-export class AngularComponentTrackyAdd {
+export class AngularComponentTrackyAdd implements OnInit {
+
+  @Input() public exerciseToEdit!: ExercisesSaved;
+  
+  @Output() public excerciseSavedEvent = new EventEmitter<ExercisesSaved>();
+
+  @Output() public onClickedOutside = new EventEmitter<MouseEvent>();
 
   dateCTX = inject(DateCTX);
   exerciseService = inject(ExerciseService)
@@ -20,24 +26,35 @@ export class AngularComponentTrackyAdd {
   newExerciseChecked = signal(false);
   enableAddSerie = signal(false);
 
-  series = signal<Array<{weight: number, reps: number, id: number}>>([]);
+  series = signal<Array<Series>>([]);
+  seriesEdit: WritableSignal<Array<Series>> = signal<Array<Series>>([]);
   openModal = signal(false);
+  openModalEdit!: boolean;
 
-
-  profileForm = new FormGroup({
-    repsControl: new FormControl('0'),
-    weightControl: new FormControl('0'),
-    exerciseSelected: new FormControl(this.initialExercises()[0].id),
-    exerciseCustomSelected: new FormControl('')
-  })
-
+  profileForm!: FormGroup;
 
   blendy: Blendy = createBlendy({
     animation: 'dynamic' // or spring
-  })
+  });
 
-  @Output()
-  public onClickedOutside = new EventEmitter<MouseEvent>();
+  ngOnInit(): void { 
+    this.openModalEdit = this.exerciseToEdit ? true : false;
+    if(this.exerciseToEdit) {
+      this.seriesEdit = signal(this.exerciseToEdit.series);
+      this.profileForm = new FormGroup({
+        repsControl: new FormControl('0'),
+        weightControl: new FormControl('0'),
+        exerciseSelected: new FormControl(this.exerciseToEdit.id)
+      })
+    } else {
+      this.profileForm = new FormGroup({
+        repsControl: new FormControl('0'),
+        weightControl: new FormControl('0'),
+        exerciseSelected: new FormControl(this.initialExercises()[0].id),
+        exerciseCustomSelected: new FormControl('')
+      })
+    }
+  }
 
   @HostListener('window:click', ['$event'])
   onClick(event: MouseEvent): void {
@@ -50,7 +67,9 @@ export class AngularComponentTrackyAdd {
   }
 
   closeModal(): void{
-    this.blendy.untoggle("addExercise", () => this.openModal.set(false));
+    this.blendy.untoggle("addExercise", () => {
+      this.openModal.set(false);
+    });
     this.resetSignals();
   }
 
@@ -76,9 +95,9 @@ export class AngularComponentTrackyAdd {
     this.newExerciseChecked.set(!this.newExerciseChecked());
 
     if(this.newExerciseChecked()){
-      this.profileForm.get('exerciseSelected')?.disable();
+      this.profileForm?.get('exerciseSelected')?.disable();
     }else{
-      this.profileForm.get('exerciseSelected')?.enable();
+      this.profileForm?.get('exerciseSelected')?.enable();
     }
   }
 
@@ -87,20 +106,32 @@ export class AngularComponentTrackyAdd {
   }
 
   saveSerie(): void {
-    this.series.update(s => [...s, {weight: this.profileForm.value.weightControl as unknown as number, reps: this.profileForm.value.repsControl as unknown as number, id: this.series().length + 1}]);
+    if(this.openModalEdit && this.seriesEdit){
+      this.seriesEdit.update(s => [...s, {weight: Number(this.profileForm?.value.weightControl), reps: Number(this.profileForm?.value.repsControl), id: this.seriesEdit().length + 1}]);
+    }else{
+      this.series.update(s => [...s, {weight: Number(this.profileForm?.value.weightControl), reps: Number(this.profileForm?.value.repsControl), id: this.series().length + 1}]);
+    }
   }
 
   saveEjercicio(): void {
-      const exerciseCustomSelected = this.profileForm.get('exerciseCustomSelected')?.value;
+    if(this.exerciseToEdit){
+      const emitedObj: ExercisesSaved = {...this.exerciseToEdit as ExercisesSaved, series: this.seriesEdit()};
+      this.closeModal();
+      this.excerciseSavedEvent.emit(emitedObj);
+    }else{
+      const exerciseCustomSelected = this.profileForm?.get('exerciseCustomSelected')?.value as string;
 
       if(exerciseCustomSelected != ''){
-        this.exerciseService.addExercise(exerciseCustomSelected as string, this.series(), this.dateCTX.currentDate());
+        this.exerciseService.addExercise(exerciseCustomSelected, this.series(), this.dateCTX.currentDate());
       }else{
-        const exerciseId = this.profileForm.get('exerciseSelected')?.value;
-        this.exerciseService.saveExercise(exerciseId as number, this.series(), this.dateCTX.currentDate());
+        const exerciseId = Number(this.profileForm?.get('exerciseSelected')?.value);
+        this.exerciseService.saveExercise(exerciseId, this.series(), this.dateCTX.currentDate());
       }
-
+      this.closeModal();
       console.log("Ejercicios guardados con sus series", this.exerciseService.exercisesSaved());
       console.log("Ejercicios totales disponibles", this.exerciseService.exercises());
+    }
   }
+
+     
 }

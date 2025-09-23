@@ -1,4 +1,3 @@
-<section>
 <div class="flex items-center gap-2 md:gap-8">
     <button type="button" (click)="previous()"> 
         <svg class="w-10 h-10 md:h-12 md:w-12 text-gray-800 dark:text-white hover:text-amber-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -19,9 +18,9 @@
 </div>
 
 @if(showNextButton()){
-    <div class="flex justify-center">
-        <button type="button" (click)="resetToToday()" class="font-medium text-amber-300 hover:text-black px-4 py-2 border-2 rounded-md border-amber-300 hover:bg-amber-300 w-40 mt-4">
-            Resetear a HOY
-        </button>
-    </div>
+<div class="flex justify-center">
+    <button type="button" (click)="resetToToday()" class="font-medium text-amber-300 hover:text-black px-4 py-2 border-2 rounded-md border-amber-300 hover:bg-amber-300 w-40 mt-4">
+        Resetear a HOY
+    </button>
+</div>
 }
