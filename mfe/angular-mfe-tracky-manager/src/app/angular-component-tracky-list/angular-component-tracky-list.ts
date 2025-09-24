@@ -20,7 +20,7 @@ export class AngularComponentTrackyList implements AfterViewInit {
   //mockedExercisesSaved = signal(this.exerciseService.getMockedExercisesSaved());
   exercisesSaved = this.exerciseService.exercisesSaved;
   showEditModal = signal(false);
-  exerciseToEdit!: WritableSignal<ExercisesSaved>;
+  exerciseToEdit: WritableSignal<ExercisesSaved> = signal({id: 0, name: '', reps: 0, weight: 0, date: new Date(), series:[]});
 
   // Initialize Swapy after the view is initialized, securiring that the DOM is ready
   ngAfterViewInit(){
@@ -46,13 +46,17 @@ export class AngularComponentTrackyList implements AfterViewInit {
   editExercise(exercise: ExercisesSaved): void{
     if(!exercise) return;
     this.showEditModal.set(true);
-    this.exerciseToEdit = signal(exercise);
+    this.exerciseToEdit.set(exercise);
   }
 
-  excerciseSavedEvent(exercise: ExercisesSaved): void{
-    this.exerciseService.editSavedExercise(exercise);
+  excerciseSavedEvent(exercise: WritableSignal<ExercisesSaved>): void{
+    this.exerciseService.editSavedExercise(exercise());
     this.showEditModal.set(false);
   }
+
+  handleClose(event: boolean): void{
+    this.showEditModal.set(!event);
+  }  
 
 
 }

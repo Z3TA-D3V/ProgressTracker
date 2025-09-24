@@ -26,7 +26,8 @@
 
 @if(showEditModal()){
     <angular-component-tracky-add 
-        [exerciseToEdit]="exerciseToEdit()"
+        [exerciseToEdit]="exerciseToEdit"
         (excerciseSavedEvent)="excerciseSavedEvent($event)"
+        (onCloseModal)="handleClose($event)"
     ></angular-component-tracky-add>
 }

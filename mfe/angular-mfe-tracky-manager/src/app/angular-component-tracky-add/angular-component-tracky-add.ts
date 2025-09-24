@@ -11,9 +11,10 @@ import {Form, FormControl, FormGroup, ReactiveFormsModule,} from '@angular/forms
 })
 export class AngularComponentTrackyAdd implements OnInit {
 
-  @Input() public exerciseToEdit!: ExercisesSaved;
+  @Input() public exerciseToEdit!: WritableSignal<ExercisesSaved>;
   
-  @Output() public excerciseSavedEvent = new EventEmitter<ExercisesSaved>();
+  @Output() public excerciseSavedEvent = new EventEmitter<WritableSignal<ExercisesSaved>>();
+  @Output() public onCloseModal = new EventEmitter<boolean>();
 
   @Output() public onClickedOutside = new EventEmitter<MouseEvent>();
 
@@ -27,9 +28,8 @@ export class AngularComponentTrackyAdd implements OnInit {
   enableAddSerie = signal(false);
 
   series = signal<Array<Series>>([]);
-  seriesEdit: WritableSignal<Array<Series>> = signal<Array<Series>>([]);
   openModal = signal(false);
-  openModalEdit!: boolean;
+  openModalEdit = signal(false);
 
   profileForm!: FormGroup;
 
@@ -38,21 +38,23 @@ export class AngularComponentTrackyAdd implements OnInit {
   });
 
   ngOnInit(): void { 
-    this.openModalEdit = this.exerciseToEdit ? true : false;
-    if(this.exerciseToEdit) {
-      this.seriesEdit = signal(this.exerciseToEdit.series);
-      this.profileForm = new FormGroup({
-        repsControl: new FormControl('0'),
-        weightControl: new FormControl('0'),
-        exerciseSelected: new FormControl(this.exerciseToEdit.id)
-      })
-    } else {
-      this.profileForm = new FormGroup({
-        repsControl: new FormControl('0'),
-        weightControl: new FormControl('0'),
-        exerciseSelected: new FormControl(this.initialExercises()[0].id),
-        exerciseCustomSelected: new FormControl('')
-      })
+    // If a SIGNAL is received as Input from FATHER, check if it's defined and initialize the form and accordingly
+    if(typeof this.exerciseToEdit === 'function') {
+      if(this.exerciseToEdit()) {
+        this.profileForm = new FormGroup({
+          repsControl: new FormControl('0'),
+          weightControl: new FormControl('0'),
+          exerciseSelected: new FormControl(this.exerciseToEdit().id)
+        })
+        this.showModal('edit');
+      }
+    }else{
+        this.profileForm = new FormGroup({
+          repsControl: new FormControl('0'),
+          weightControl: new FormControl('0'),
+          exerciseSelected: new FormControl(this.initialExercises()[0].id),
+          exerciseCustomSelected: new FormControl('')
+        })
     }
   }
 
@@ -68,13 +70,17 @@ export class AngularComponentTrackyAdd implements OnInit {
 
   closeModal(): void{
     this.blendy.untoggle("addExercise", () => {
-      this.openModal.set(false);
+      this.resetSignals();
+      this.openModalEdit() ? this.onCloseModal.emit(true) : this.openModal.set(false)
     });
-    this.resetSignals();
   }
 
-  showModal(): void{
-    this.openModal.set(true);
+  showModal(type?: string): void{
+    if(type === 'edit'){
+      this.openModalEdit.set(true);
+    }else{
+      this.openModal.set(true);
+    }
     this.blendy.toggle("addExercise");
   }
 
@@ -88,7 +94,6 @@ export class AngularComponentTrackyAdd implements OnInit {
       exerciseSelected: new FormControl(this.initialExercises()[0].id),
       exerciseCustomSelected: new FormControl('')
     })
-
   }
 
   updateCheck(): void{
@@ -106,8 +111,8 @@ export class AngularComponentTrackyAdd implements OnInit {
   }
 
   saveSerie(): void {
-    if(this.openModalEdit && this.seriesEdit){
-      this.seriesEdit.update(s => [...s, {weight: Number(this.profileForm?.value.weightControl), reps: Number(this.profileForm?.value.repsControl), id: this.seriesEdit().length + 1}]);
+    if(this.openModalEdit() && this.exerciseToEdit()){
+      this.exerciseToEdit.update(e => ({...e, series: [...e.series, {weight: Number(this.profileForm?.value.weightControl), reps: Number(this.profileForm?.value.repsControl), id: this.exerciseToEdit().series.length + 1}]}));
     }else{
       this.series.update(s => [...s, {weight: Number(this.profileForm?.value.weightControl), reps: Number(this.profileForm?.value.repsControl), id: this.series().length + 1}]);
     }
@@ -115,9 +120,7 @@ export class AngularComponentTrackyAdd implements OnInit {
 
   saveEjercicio(): void {
     if(this.exerciseToEdit){
-      const emitedObj: ExercisesSaved = {...this.exerciseToEdit as ExercisesSaved, series: this.seriesEdit()};
-      this.closeModal();
-      this.excerciseSavedEvent.emit(emitedObj);
+      this.excerciseSavedEvent.emit(this.exerciseToEdit);
     }else{
       const exerciseCustomSelected = this.profileForm?.get('exerciseCustomSelected')?.value as string;
 
@@ -132,6 +135,4 @@ export class AngularComponentTrackyAdd implements OnInit {
       console.log("Ejercicios totales disponibles", this.exerciseService.exercises());
     }
   }
-
-     
 }
