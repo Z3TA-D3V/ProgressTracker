@@ -1,0 +1,21 @@
+<!-- Loading MFEs from the remoteModules array in app.ts file that comes from the manifest.json file. -->
+
+@if(angularMfe().length > 0){
+  @for(mfe of angularMfe(); track $index){
+    <ng-container *ngComponentOutlet="mfe"></ng-container>
+  }
+}
+
+@if(failedModules().length > 0){
+  <div class="error-messages">
+    <h3>Failed to load the following Micro Frontends:</h3>
+    <ul>
+      @for(failed of failedModules(); track $index){
+        <li>
+          <strong>{{failed.module.exposedModule}}</strong>: {{failed.reason?.message || 'Unknown error'}}
+        </li>
+      }
+    </ul>
+  </div>
+}
+
