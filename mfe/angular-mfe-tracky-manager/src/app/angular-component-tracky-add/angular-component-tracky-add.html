@@ -1,4 +1,4 @@
-@if(typeof exerciseToEdit !== 'function' ) {
+@if(flux() === 'default'){ 
     <div class="flex justify-center items-center min-w-screen">
         <button data-blendy-from="addExercise" class="bg-slate-200 hover:bg-slate-300 font-bold w-full md:w-3xl mx-5 md:mx-20 p-2 rounded-md" (click)="showModal()">
         <!-- Must have a single wrapper element -->

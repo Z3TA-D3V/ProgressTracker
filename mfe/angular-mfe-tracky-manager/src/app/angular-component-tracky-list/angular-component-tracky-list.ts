@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, signal, WritableSignal } from '@angular/core';
+import {  AfterViewInit, Component, effect, inject, signal, WritableSignal } from '@angular/core';
 import { createSwapy, Swapy } from 'swapy';
 import { ExerciseService, ExercisesSaved } from '@shared/exercise-mfe-ctx'
 import { AngularComponentTrackyAdd } from '../angular-component-tracky-add/angular-component-tracky-add';
@@ -9,7 +9,7 @@ import { AngularComponentTrackyAdd } from '../angular-component-tracky-add/angul
   templateUrl: './angular-component-tracky-list.html',
   styleUrl: './angular-component-tracky-list.css'
 })
-export class AngularComponentTrackyList implements AfterViewInit {
+export class AngularComponentTrackyList {
 
   container: HTMLElement | null = null;
   swapy: Swapy = null as any;
@@ -22,17 +22,25 @@ export class AngularComponentTrackyList implements AfterViewInit {
   showEditModal = signal(false);
   exerciseToEdit: WritableSignal<ExercisesSaved> = signal({id: 0, name: '', reps: 0, weight: 0, date: new Date(), series:[]});
 
-  // Initialize Swapy after the view is initialized, securiring that the DOM is ready
-  ngAfterViewInit(){
-    this.buildSwapy();
+  constructor() {
+    effect(() => {
+      const list = this.exercisesSaved();
+      setTimeout(() => {
+        this.buildSwapy(list);
+      });
+    });
   }
 
-  buildSwapy(){
-    this.container = document.querySelector('.container');
-    this.swapy = createSwapy(this.container as HTMLElement, {
-      animation: 'spring'
-    });
-    this.swapy.enable(true)
+  buildSwapy(exercises?: ExercisesSaved[]): void{
+    if(exercises && exercises.length){
+      if (this.swapy && exercises.length > 0) {
+        this.swapy.destroy();
+      } 
+      this.container = document.querySelector('.container');
+      this.swapy = createSwapy(this.container as HTMLElement, {
+        animation: 'dynamic'
+      });
+    }
   }
 
   deleteSavedExercise(id: number): void{
@@ -57,6 +65,5 @@ export class AngularComponentTrackyList implements AfterViewInit {
   handleClose(event: boolean): void{
     this.showEditModal.set(!event);
   }  
-
 
 }

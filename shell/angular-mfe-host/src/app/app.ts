@@ -12,6 +12,7 @@ export class App {
 
   public angularMfe = signal<any[]>([]);
 
+
   heroMfeCTX = inject(HeroMfeCtx);
 
   async loadRemoteModules(){
@@ -39,6 +40,7 @@ export class App {
   }
   
   constructor() {
+    
     effect(() => {
       this.loadRemoteModules()
     });

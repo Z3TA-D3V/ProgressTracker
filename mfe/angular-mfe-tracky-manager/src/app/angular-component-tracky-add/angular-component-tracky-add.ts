@@ -32,6 +32,7 @@ export class AngularComponentTrackyAdd implements OnInit {
   openModalEdit = signal(false);
 
   profileForm!: FormGroup;
+  flux: WritableSignal<string> = signal('default'); // default | edit
 
   blendy: Blendy = createBlendy({
     animation: 'dynamic' // or spring
@@ -41,6 +42,7 @@ export class AngularComponentTrackyAdd implements OnInit {
     // If a SIGNAL is received as Input from FATHER, check if it's defined and initialize the form and accordingly
     if(typeof this.exerciseToEdit === 'function') {
       if(this.exerciseToEdit()) {
+        this.flux.set('edit');
         this.profileForm = new FormGroup({
           repsControl: new FormControl('0'),
           weightControl: new FormControl('0'),
@@ -86,6 +88,9 @@ export class AngularComponentTrackyAdd implements OnInit {
 
   resetSignals(): void{
     this.series.set([]);
+    if(typeof this.exerciseToEdit === 'function'){
+      this.exerciseToEdit = null as any;
+    }
     this.newExerciseChecked.set(false);
     this.enableAddSerie.set(false);
     this.profileForm = new FormGroup({
