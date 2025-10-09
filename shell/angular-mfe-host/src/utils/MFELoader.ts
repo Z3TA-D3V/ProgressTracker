@@ -1,5 +1,5 @@
 import { loadRemoteModule } from '@angular-architects/module-federation';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 export interface LoadMFEResult {
     loadedModules: any[];
@@ -33,20 +33,29 @@ export class MFELoader {
     }
 
     public loadMFEs = async (): Promise<LoadMFEResult> => {
-        const results = await Promise.allSettled(this.MFEPromiseBuilder());
+        // Siempre resetar los módulos antes de cargar nuevos -> Singelton Service, si no, al reedirigir a otra ruta, se acumulan los módulos
+        this.resetModules();
 
-        results.forEach((result, index) => {
-            if (result.status === 'fulfilled') {
-                this.loadedModules.push(result.value[toPascalCase(this.options[index].remoteName)]);
+        const MFEs = await Promise.allSettled(this.MFEPromiseBuilder());
+
+        MFEs.forEach((MFE, index) => {
+            if (MFE.status === 'fulfilled') {
+                this.loadedModules.push(MFE.value[toPascalCase(this.options[index].remoteName)]);
             } else {
                 this.failedModules.push({
                     module: this.options[index],
-                    reason: result.reason
+                    reason: MFE.reason
                 });
-                console.error(`Error loading MFE: ${this.options[index].exposedModule}`, result.reason);
+                console.error(`Error loading MFE: ${this.options[index].exposedModule}`, MFE.reason);
             }
         });
+
         return { loadedModules: this.loadedModules, failedModules: this.failedModules };
+    }
+
+    private resetModules(): void{
+        this.loadedModules = [];
+        this.failedModules = [];
     }
 }
 
