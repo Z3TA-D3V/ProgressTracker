@@ -10,7 +10,5 @@ export default class HeroMfeCTX {
   constructor() { 
 
   }
-  
-
 
 }

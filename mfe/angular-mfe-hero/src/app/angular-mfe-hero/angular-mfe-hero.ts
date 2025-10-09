@@ -1,5 +1,7 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import HeroMfeCtx from "@shared/hero-mfe-ctx"; // Idealmente esto sería un paquete NPM compartido entre el host y el MFE
+import RouterMfeCTX from "@shared/router-mfe-ctx"; // Idealmente esto sería un paquete NPM compartido entre el host y el MFE
 @Component({
   selector: 'angular-mfe-hero',
   imports: [],
@@ -9,10 +11,10 @@ import HeroMfeCtx from "@shared/hero-mfe-ctx"; // Idealmente esto sería un paqu
 })
 export class AngularMfeHero {
 
-  heroMfeCTX = inject(HeroMfeCtx);
+  private RouterCTX = inject(RouterMfeCTX)
 
-  onStart() {
-    this.heroMfeCTX.active.set(false); // Señal que indica que el HERO MFE ya no está activo
+  onNavigate = () => {
+    this.RouterCTX.navigateTo('/tracking');
   }
 
 }

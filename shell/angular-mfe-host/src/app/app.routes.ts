@@ -1,11 +1,16 @@
-import { Routes } from '@angular/router';
-import { App } from './app';
+import { inject } from '@angular/core/primitives/di';
+import { Router, Routes } from '@angular/router';
 import { HomeView } from 'src/views/HomeView/HomeView';
+import { TrackingMenuView } from 'src/views/TrackingMenuView/TrackingMenuView';
 
 export const routes: Routes = [
     {
        path: '',
-       loadComponent: () => HomeView
+       component: HomeView
     },
+    {
+        path: 'tracking',
+        loadComponent: () => TrackingMenuView
+    }
 
 ];

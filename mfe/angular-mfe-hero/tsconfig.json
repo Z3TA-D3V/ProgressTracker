@@ -14,7 +14,8 @@
     "module": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@shared/hero-mfe-ctx": ["../../shell/angular-mfe-host/libs/shared/src/lib/hero-mfe-ctx/hero-mfe-ctx"]
+      "@shared/hero-mfe-ctx": ["../../shell/angular-mfe-host/libs/shared/src/lib/hero-mfe-ctx/hero-mfe-ctx"],
+      "@shared/router-mfe-ctx": ["../../shell/angular-mfe-host/libs/shared/src/lib/router-mfe-ctx/router-mfe-ctx"],
     }
   },
   "angularCompilerOptions": {
