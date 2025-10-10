@@ -1,6 +1,19 @@
 
-<div class="flex flex-col items-center gap-4 p-4">
-    <angular-component-tracky-date></angular-component-tracky-date>
-    <angular-component-tracky-add></angular-component-tracky-add>
-    <angular-component-tracky-list></angular-component-tracky-list>
-</div>
+<section class="flex justify-center gap-2 px-24 py-24 min-h-screen">
+
+    <section class="w-7/12 flex flex-col">
+        <h1 class="text-5xl font-bold my-4">{{title()}}</h1>
+        <div class="flex flex-row gap-4">
+            <angular-component-tracky-date></angular-component-tracky-date>
+            <button class="text-xl px-24 bg-green-400 font-medium rounded-lg text-center">Add</button>
+        </div>
+        <span class="text-base ml-10 mt-2">Click it to change dates!</span>
+
+    </section>
+
+    <section class="w-5/12 border-slate-300 border-l-8 flex flex-col gap-2 px-4">
+        <h2 class="text-3xl font-bold">Start adding Exercises!</h2>
+        <p class="w-4/12 font-bold text-base">There is no exercises done for today, start adding new ones with the <span class="text-green-400 font-bold">GREEN</span> button</p>
+    </section>
+
+</section>

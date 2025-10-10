@@ -21,7 +21,7 @@ export class AngularComponentTrackyAdd implements OnInit {
   dateCTX = inject(DateCTX);
   exerciseService = inject(ExerciseService)
 
-  currentDateString = this.dateCTX.currentDateString;
+  currentDateStringEN = this.dateCTX.currentDateStringEN;
   initialExercises = this.exerciseService.exercises;
 
   newExerciseChecked = signal(false);

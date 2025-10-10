@@ -1,26 +1,6 @@
-<div class="flex items-center gap-2 md:gap-8">
-    <button type="button" (click)="previous()"> 
-        <svg class="w-10 h-10 md:h-12 md:w-12 text-gray-800 dark:text-white hover:text-amber-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/>
-        </svg>
-    </button>
 
-    <!-- TODO: Make this H2 clickable to select currentDate -->
-    <h2 class="font-extrabold text-xl md:text-3xl text-center border-2 rounded-md p-1 md:py-4 md:px-4 hover:text-amber-300   "> {{ currentDateToString() }}</h2>
-    
-    @if(showNextButton()){
-    <button type="button" (click)="next()"> 
-        <svg class="w-10 h-10 md:h-12 md:w-12 text-gray-800 dark:text-white hover:text-amber-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
-        </svg>
-    </button>
-    }
-</div>
-
-@if(showNextButton()){
-<div class="flex justify-center">
-    <button type="button" (click)="resetToToday()" class="font-medium text-amber-300 hover:text-black px-4 py-2 border-2 rounded-md border-amber-300 hover:bg-amber-300 w-40 mt-4">
-        Resetear a HOY
-    </button>
-</div>
-}
+<input id="date-input" 
+    type="text"
+    placeholder="{{currentDateToStringEN()}}"
+    class="text-center w-full px-24 py-3 text-lg font-semibold text-gray-800 bg-white border-2 border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none hover:border-gray-400 cursor-pointer"
+/>

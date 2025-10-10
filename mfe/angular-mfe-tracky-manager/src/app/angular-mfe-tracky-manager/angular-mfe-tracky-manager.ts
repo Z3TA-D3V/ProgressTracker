@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 // Standalones componentes del MFE Tracky Manager.
 import { AngularComponentTrackyDate } from './components/angular-component-tracky-date/angular-component-tracky-date';
 import { AngularComponentTrackyList } from './components/angular-component-tracky-list/angular-component-tracky-list';
 import { AngularComponentTrackyAdd } from './components/angular-component-tracky-add/angular-component-tracky-add';
+import { AirDatepickerDate } from 'air-datepicker'; // Librería de terceros para el datepicker
 
 @Component({
   selector: 'angular-mfe-tracky-manager',
@@ -11,5 +12,7 @@ import { AngularComponentTrackyAdd } from './components/angular-component-tracky
   styleUrl: './angular-mfe-tracky-manager.css'
 })
 export class AngularMfeTrackyManager {
+
+  title: WritableSignal<string> = signal("Start by adding an exercise...")
 
 }
